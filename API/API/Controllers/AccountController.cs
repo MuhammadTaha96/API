@@ -11,7 +11,6 @@ namespace API.Controllers
         // GET: Account
         public ActionResult Index()
         {
-            string testName = "nOMAN";
             return View();
         }
     }
