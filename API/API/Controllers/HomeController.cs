@@ -15,6 +15,7 @@ namespace API.Controllers
 
         public ActionResult Index()
         {
+            string test = string.Empty;
             return View();
         }
 
