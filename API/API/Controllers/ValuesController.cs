@@ -106,7 +106,7 @@ namespace API.Controllers
                 res.ReservedBy = db.UserLogins.Where(x => x.UserLoginId == userLoginId).SingleOrDefault();
                 res.ReservedCopy = db.Copies.Where(x => x.Book.BookId == bookId && x.Status.Name == "Available").FirstOrDefault();
                 res.ReservedCopy.Status = db.Status.Where(x => x.Name == "Reserved").SingleOrDefault();
-                
+
                 res.StartDateTime = DateTime.Now;
                 res.EndDateTime = DateTime.Today.AddDays(1);
 
@@ -132,7 +132,7 @@ namespace API.Controllers
                 db.SaveChanges();
                 success = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return success;
             }
@@ -140,7 +140,49 @@ namespace API.Controllers
             return success;
 
         }
-        
+
+        [HttpGet]
+        public object GetComments(string bookId)
+        {
+
+            var commentList = (
+                               from c in db.Comments
+                               select new
+                               {
+                                   c.CommentId,
+                                   c.Content,
+                                   c.Rating,
+                                   c.Commenter,
+                                   c.Book
+                               }
+
+                               ).ToList();
+
+            return commentList;
+
+        }
+
+
+        [HttpGet]
+        public object GetReviews(string bookId)
+        {
+
+            var commentList = (
+                               from r in db.Reviews
+                               select new
+                               {
+                                   r.ReviewId,
+                                   r.Reviewer,
+                                   r.Content,
+                                   r.Book,
+                               }
+
+                               ).ToList();
+
+            return commentList;
+
+        }
+
 
 
 
