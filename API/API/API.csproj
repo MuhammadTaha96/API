@@ -177,6 +177,18 @@
     <Compile Include="Migrations\201910271131203_multipleauthor.Designer.cs">
       <DependentUpon>201910271131203_multipleauthor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201910271854060_temproraryerrormessage.cs" />
+    <Compile Include="Migrations\201910271854060_temproraryerrormessage.Designer.cs">
+      <DependentUpon>201910271854060_temproraryerrormessage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910271855532_temproraryerrormessage1.cs" />
+    <Compile Include="Migrations\201910271855532_temproraryerrormessage1.Designer.cs">
+      <DependentUpon>201910271855532_temproraryerrormessage1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910271903066_removeValidate.cs" />
+    <Compile Include="Migrations\201910271903066_removeValidate.Designer.cs">
+      <DependentUpon>201910271903066_removeValidate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Operations\Account.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -280,6 +292,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201910271131203_multipleauthor.resx">
       <DependentUpon>201910271131203_multipleauthor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910271854060_temproraryerrormessage.resx">
+      <DependentUpon>201910271854060_temproraryerrormessage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910271855532_temproraryerrormessage1.resx">
+      <DependentUpon>201910271855532_temproraryerrormessage1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910271903066_removeValidate.resx">
+      <DependentUpon>201910271903066_removeValidate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

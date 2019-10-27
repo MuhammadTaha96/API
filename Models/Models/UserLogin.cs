@@ -20,7 +20,7 @@ namespace Models
         public string Password { get; set; }
         public string RFID { get; set; }
         public bool IsActive { get; set; }
-
+        public string ValidationErrorMessage { get; set; }
         public UserType UserType { get; set; }
     }
 }

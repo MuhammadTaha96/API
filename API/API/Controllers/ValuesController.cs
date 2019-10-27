@@ -98,6 +98,44 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        public object ValidateUserLogin(string username, string password)
+        {
+            UserLogin user = new UserLogin();
+
+            var userNameExist = db.UserLogins.Where(x => x.UserName == username).SingleOrDefault();
+            var validUser = db.UserLogins.Where(x => x.UserName == username && x.Password == password).SingleOrDefault();
+  
+            if (userNameExist != null && validUser != null)
+            {
+                var userR = (from ul in db.UserLogins
+                             where ul.UserName == username && ul.Password == password
+                             select new
+                             {
+                                 ul.UserName,
+                                 ul.FullName,
+                                 ul.Email,
+                                 ul.IsActive,
+                                 ul.PhoneNumber,
+                                 ul.RFID,
+                                 ul.UserType,
+                                 ul.UserLoginId,
+                                 ul.ValidationErrorMessage
+                             }).SingleOrDefault();
+                    return userR;
+            }
+            else if (userNameExist != null && validUser == null)
+            {
+                user.ValidationErrorMessage = "Please enter correct password";
+            }
+            else if (userNameExist == null)
+            {
+                user.ValidationErrorMessage = "Please enter correct username";
+            }
+           
+                return user;
+        }
+
+        [HttpGet]
         public bool ReserveACopy(int bookId, int userLoginId)
         {
             try
