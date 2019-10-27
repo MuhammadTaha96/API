@@ -21,11 +21,11 @@ namespace Models
         public string ISBN_No { get; set; }
         public bool IsDeleted { get; set; }
         public string ImagePath { get; set; }
-        
-        public Author Author { get; set; }
+
         public Publisher Publisher { get; set; }
         public Category Category { get; set; }
-        
+
+        public List<Author> Authors { get; set; }
         public List<Review> Reviews { get; set; }
         public List<Comment> Comments { get; set; }
         public List<Copy> Copies { get; set; }

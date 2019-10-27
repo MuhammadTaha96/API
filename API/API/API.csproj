@@ -173,6 +173,10 @@
     <Compile Include="Migrations\201910191439457_addImagePath.Designer.cs">
       <DependentUpon>201910191439457_addImagePath.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201910271131203_multipleauthor.cs" />
+    <Compile Include="Migrations\201910271131203_multipleauthor.Designer.cs">
+      <DependentUpon>201910271131203_multipleauthor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Operations\Account.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -273,6 +277,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201910191439457_addImagePath.resx">
       <DependentUpon>201910191439457_addImagePath.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910271131203_multipleauthor.resx">
+      <DependentUpon>201910271131203_multipleauthor.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

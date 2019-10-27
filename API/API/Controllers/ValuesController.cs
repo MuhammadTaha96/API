@@ -28,7 +28,7 @@ namespace API.Controllers
                          b.Category,
                          b.Reviews,
                          b.Publisher,
-                         b.Author,
+                         b.Authors,
                          b.ImagePath,
                          b.Copies
                      }).OrderBy(x => x.BookId).ToList();
@@ -144,9 +144,10 @@ namespace API.Controllers
         [HttpGet]
         public object GetComments(string bookId)
         {
-
+            int bId = int.Parse(bookId);
             var commentList = (
                                from c in db.Comments
+                               where c.Book.BookId.Equals(bId)
                                select new
                                {
                                    c.CommentId,
@@ -166,9 +167,10 @@ namespace API.Controllers
         [HttpGet]
         public object GetReviews(string bookId)
         {
-
+            int bId = int.Parse(bookId);
             var commentList = (
                                from r in db.Reviews
+                               where r.Book.BookId.Equals(bId)
                                select new
                                {
                                    r.ReviewId,
