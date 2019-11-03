@@ -1,0 +1,5 @@
+﻿Dear [UserName],
+ You have Reserved the book "[BookName]" till Date [Date].
+ Kindly collect the book before the date ends.
+ 
+-IU Smart Library System 

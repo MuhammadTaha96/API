@@ -17,5 +17,6 @@ namespace Models
         public int Rating { get; set; }    
         public UserLogin Commenter { get; set; }
         public Book Book { get; set; }
+        public DateTime Date { get; set; }
     }
 }

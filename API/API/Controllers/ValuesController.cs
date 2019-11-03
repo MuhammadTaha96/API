@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using API.Operations;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -140,6 +141,7 @@ namespace API.Controllers
         {
             try
             {
+                Book book = db.Books.Where(x=>x.BookId == bookId).SingleOrDefault();
                 Reservation res = new Reservation();
                 res.ReservedBy = db.UserLogins.Where(x => x.UserLoginId == userLoginId).SingleOrDefault();
                 res.ReservedCopy = db.Copies.Where(x => x.Book.BookId == bookId && x.Status.Name == "Available").FirstOrDefault();
@@ -147,9 +149,12 @@ namespace API.Controllers
 
                 res.StartDateTime = DateTime.Now;
                 res.EndDateTime = DateTime.Today.AddDays(1);
+                Notification.SMS("ReserverACopy", res.ReservedBy, book, res);
 
                 db.Reservations.Add(res);
                 db.SaveChanges();
+
+                
             }
             catch (Exception ex)
             {
@@ -192,7 +197,8 @@ namespace API.Controllers
                                    c.Content,
                                    c.Rating,
                                    c.Commenter,
-                                   c.Book
+                                   c.Book,
+                                   c.Date
                                }
 
                                ).ToList();
@@ -221,6 +227,30 @@ namespace API.Controllers
 
             return commentList;
 
+        }
+
+        [HttpGet]
+        public bool AddComment(int bookId, string commentText, int userLoginId)
+        {
+            try
+            {
+                UserLogin user = db.UserLogins.Where(x => x.UserLoginId == userLoginId).SingleOrDefault();
+                Book book = db.Books.Where(x => x.BookId == bookId).SingleOrDefault();
+
+                Comment comment = new Comment();
+                comment.Commenter = user;
+                comment.Book = book;
+                comment.Content = commentText;
+                comment.Date = DateTime.Now;
+
+                db.Comments.Add(comment);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
         }
 
 
