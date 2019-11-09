@@ -253,6 +253,26 @@ namespace API.Controllers
             return true;
         }
 
+        [HttpGet]
+        public object GetAvailableCopies(int bookId)
+        {
+         //   List<Copy> availableCopies = db.Copies.Where(x => x.Book.BookId == bookId && x.Status.Name.ToLower() == "available").ToList();
+            var availableCopies = (
+                             from c in db.Copies
+                             where c.Book.BookId.Equals(bookId) && c.Status.Name.ToLower().Equals("available")
+                             select new
+                             {
+                                c.CopyId,
+                                c.RFID,
+                                c.Book,
+                                c.Location,
+                                c.Status
+                             }
+
+                             ).ToList();
+            
+            return availableCopies;
+        }
 
 
 

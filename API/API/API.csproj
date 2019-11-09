@@ -202,6 +202,14 @@
     <Compile Include="Migrations\201911030016126_CommentDate.Designer.cs">
       <DependentUpon>201911030016126_CommentDate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201911091047332_locationchanges.cs" />
+    <Compile Include="Migrations\201911091047332_locationchanges.Designer.cs">
+      <DependentUpon>201911091047332_locationchanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911091049248_locationchanges1.cs" />
+    <Compile Include="Migrations\201911091049248_locationchanges1.Designer.cs">
+      <DependentUpon>201911091049248_locationchanges1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Operations\Account.cs" />
     <Compile Include="Operations\Constants.cs" />
@@ -320,6 +328,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201911030016126_CommentDate.resx">
       <DependentUpon>201911030016126_CommentDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911091047332_locationchanges.resx">
+      <DependentUpon>201911091047332_locationchanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911091049248_locationchanges1.resx">
+      <DependentUpon>201911091049248_locationchanges1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
