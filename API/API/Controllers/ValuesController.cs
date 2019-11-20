@@ -100,6 +100,27 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        public object ValidateLibrarian(string username, string password)
+        {
+            var user = (from ul in db.UserLogins
+                        where ul.UserName == username && ul.Password == password && ul.UserType.Name.Equals("librarian")
+                        select new
+                        {
+                            ul.UserName,
+                            ul.FullName,
+                            ul.Email,
+                            ul.IsActive,
+                            ul.PhoneNumber,
+                            ul.RFID,
+                            ul.UserType,
+                            ul.UserLoginId
+                        }).SingleOrDefault();
+
+            return user;
+        }
+
+
+        [HttpGet]
         public object ValidateUserLogin(string username, string password)
         {
             UserLogin user = new UserLogin();
@@ -150,7 +171,7 @@ namespace API.Controllers
 
                 res.StartDateTime = DateTime.Now;
                 res.EndDateTime = DateTime.Today.AddDays(1);
-                Notification.SMS("ReserverACopy", res.ReservedBy, book, res);
+               Notification.SMS("ReserverACopy", res.ReservedBy, book, res);
 
                 db.Reservations.Add(res);
                 db.SaveChanges();
@@ -318,6 +339,40 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        public bool AddCategory(Category category)
+        {
+            try
+            {
+                db.Categories.Add(category);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        [HttpPost]
+        public bool AddPublisher(Publisher publisher)
+        {
+            try
+            {
+                db.Publishers.Add(publisher);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+
+
+        [HttpPost]
         public bool AddCopy(Copy copy)
         {
             try
@@ -328,7 +383,7 @@ namespace API.Controllers
 
                 db.Copies.Add(copy);
                 db.SaveChanges();
-            
+
             }
             catch (Exception ex)
             {
@@ -357,10 +412,10 @@ namespace API.Controllers
         {
             var availableLocations = (
                            from l in db.Locations
-                              where !(from c in db.Copies
-            select c.Location.LocationId)    
-           .Contains(l.LocationId)    
-            select l).ToList();
+                           where !(from c in db.Copies
+                                   select c.Location.LocationId)
+        .Contains(l.LocationId)
+                           select l).ToList();
 
             return availableLocations;
         }
