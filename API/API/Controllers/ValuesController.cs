@@ -17,6 +17,7 @@ namespace API.Controllers
         public object GetAllBooks()
         {
             var q = (from b in db.Books
+                     where b.IsDeleted.Equals(false)
                      select new
                      {
                          b.BookId,
@@ -319,7 +320,46 @@ namespace API.Controllers
             return true;
         }
 
+         [HttpPost]
+        public bool UpdateBook(Book book)
+        {
+            try
+            {
+                Book bookDetails = db.Books.Where(x => x.BookId == book.BookId).SingleOrDefault();
 
+                bookDetails.Publisher = db.Publishers.Where(x => x.PublisherId.Equals(book.Publisher.PublisherId)).SingleOrDefault();
+                bookDetails.Category = db.Categories.Where(x => x.CategoryId.Equals(book.Category.CategoryId)).SingleOrDefault();
+                bookDetails.Description = book.Description;
+                bookDetails.ISBN_No = book.ISBN_No;
+                bookDetails.PublishedYear = book.PublishedYear;
+                bookDetails.Language = book.Language;
+
+                db.SaveChanges();
+                return true;
+            }
+             catch(Exception ex)
+            {
+                return false;
+            }
+        }
+
+        [HttpGet]
+        public bool DeleteBook(int bookId)
+        {
+            try
+            {
+                Book bookDetails = db.Books.Where(x => x.BookId == bookId).SingleOrDefault();
+                bookDetails.IsDeleted = true;
+
+                db.SaveChanges();
+                return true;
+            }
+             catch(Exception ex)
+            {
+                return false;
+            }
+        }
+   
         [HttpPost]
         public bool AddAuthor(Author author)
         {
