@@ -210,6 +210,18 @@
     <Compile Include="Migrations\201911091049248_locationchanges1.Designer.cs">
       <DependentUpon>201911091049248_locationchanges1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201911240055312_isDeletedbit.cs" />
+    <Compile Include="Migrations\201911240055312_isDeletedbit.Designer.cs">
+      <DependentUpon>201911240055312_isDeletedbit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911241406191_isDeletedbit1.cs" />
+    <Compile Include="Migrations\201911241406191_isDeletedbit1.Designer.cs">
+      <DependentUpon>201911241406191_isDeletedbit1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911241411033_EDITION.cs" />
+    <Compile Include="Migrations\201911241411033_EDITION.Designer.cs">
+      <DependentUpon>201911241411033_EDITION.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Operations\Account.cs" />
     <Compile Include="Operations\Constants.cs" />
@@ -334,6 +346,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201911091049248_locationchanges1.resx">
       <DependentUpon>201911091049248_locationchanges1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911240055312_isDeletedbit.resx">
+      <DependentUpon>201911240055312_isDeletedbit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911241406191_isDeletedbit1.resx">
+      <DependentUpon>201911241406191_isDeletedbit1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911241411033_EDITION.resx">
+      <DependentUpon>201911241411033_EDITION.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

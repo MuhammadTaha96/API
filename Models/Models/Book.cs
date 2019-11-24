@@ -21,6 +21,7 @@ namespace Models
         public string ISBN_No { get; set; }
         public bool IsDeleted { get; set; }
         public string ImagePath { get; set; }
+        public string Edition { get; set; }
 
         public Publisher Publisher { get; set; }
         public Category Category { get; set; }

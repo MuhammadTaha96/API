@@ -39,6 +39,80 @@ namespace API.Controllers
             return q;
         }
 
+
+        public object GetUsers(string userType)
+        {
+            if (userType.Equals("all"))
+            {
+                var q = (from u in db.UserLogins
+                         where u.IsDeleted.Equals(false)
+                         select new
+                         {
+                             u.FullName,
+                             u.Email,
+                             u.PhoneNumber,
+                             u.RFID,
+                             u.UserName,
+                             u.UserType,
+                             u.IsActive,
+                             u.UserLoginId,
+                             u.IsDeleted
+                         }).OrderBy(x => x.FullName).ToList();
+
+                return q;
+            }
+            else
+            {
+
+                var q = (from u in db.UserLogins
+                         where u.UserType.Name.Equals(userType) && u.IsDeleted.Equals(false)
+                         select new
+                         {
+                             u.FullName,
+                             u.Email,
+                             u.PhoneNumber,
+                             u.RFID,
+                             u.UserName,
+                             u.UserType,
+                             u.IsActive,
+                             u.UserLoginId,
+                             u.IsDeleted
+                         }).OrderBy(x => x.FullName).ToList();
+
+                return q;
+            }
+        }
+
+        public object GetReservations()
+        {
+            var q = (from r in db.Reservations
+                     select new
+                     {
+                         r.ReservationId,
+                         r.ReservedCopy,
+                         r.ReservedBy,
+                         r.StartDateTime,
+                         r.EndDateTime,
+                         r.IsCancled,
+                         r.ReservedCopy.Book
+                     }).OrderBy(x => x.ReservationId).ToList();
+
+            return q;
+        }
+
+        public object GetUserTypes()
+        {
+            var q = (from u in db.UserTypes
+                     select new
+                     {
+                         u.UserTypeId,
+                         u.Name,
+                         u.Description
+                     }).OrderBy(x => x.Name).ToList();
+
+            return q;
+        }
+
         public object GetCopies()
         {
             var q = (from c in db.Copies
@@ -127,7 +201,7 @@ namespace API.Controllers
             UserLogin user = new UserLogin();
 
             var userNameExist = db.UserLogins.Where(x => x.UserName == username).SingleOrDefault();
-            var validUser = db.UserLogins.Where(x => x.UserName == username && x.Password == password).SingleOrDefault();
+            var validUser = db.UserLogins.Where(x => x.UserName == username && x.Password == password && x.IsActive.Equals(true) && x.IsDeleted.Equals(false)).SingleOrDefault();
 
             if (userNameExist != null && validUser != null)
             {
@@ -172,7 +246,7 @@ namespace API.Controllers
 
                 res.StartDateTime = DateTime.Now;
                 res.EndDateTime = DateTime.Today.AddDays(1);
-               Notification.SMS("ReserverACopy", res.ReservedBy, book, res);
+                Notification.SMS("ReserverACopy", res.ReservedBy, book, res);
 
                 db.Reservations.Add(res);
                 db.SaveChanges();
@@ -320,7 +394,23 @@ namespace API.Controllers
             return true;
         }
 
-         [HttpPost]
+        [HttpPost]
+        public bool AddUser(UserLogin user)
+        {
+            try
+            {
+                user.UserType = db.UserTypes.Where(x => x.UserTypeId == user.UserType.UserTypeId).SingleOrDefault();
+                db.UserLogins.Add(user);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        [HttpPost]
         public bool UpdateBook(Book book)
         {
             try
@@ -337,11 +427,34 @@ namespace API.Controllers
                 db.SaveChanges();
                 return true;
             }
-             catch(Exception ex)
+            catch (Exception ex)
             {
                 return false;
             }
         }
+
+        [HttpPost]
+        public bool UpdateUser(UserLogin updatedUser)
+        {
+            try
+            {
+                UserLogin User = db.UserLogins.Where(x => x.UserLoginId == updatedUser.UserLoginId).SingleOrDefault();
+                User.FullName = updatedUser.FullName;
+                User.Email = updatedUser.Email;
+                User.PhoneNumber = updatedUser.PhoneNumber;
+                User.RFID = updatedUser.RFID;
+                User.IsActive = updatedUser.IsActive;
+                User.Password = string.IsNullOrEmpty(updatedUser.Password) ? User.Password : updatedUser.Password;
+
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
 
         [HttpGet]
         public bool DeleteBook(int bookId)
@@ -354,12 +467,48 @@ namespace API.Controllers
                 db.SaveChanges();
                 return true;
             }
-             catch(Exception ex)
+            catch (Exception ex)
             {
                 return false;
             }
         }
-   
+
+         [HttpGet]
+        public bool CancleReservation(int reservationId, int copyId)
+        {
+            try
+            {
+                Reservation reservation = db.Reservations.Where(x => x.ReservationId == reservationId).SingleOrDefault();
+                reservation.IsCancled = true;
+                Copy copy = db.Copies.Where(x => x.CopyId == copyId).SingleOrDefault();
+                copy.Status = db.Status.Where(x => x.Name.Equals("Available")).SingleOrDefault();
+
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        [HttpGet]
+        public bool DeleteUser(int userId)
+        {
+            try
+            {
+                UserLogin user = db.UserLogins.Where(x => x.UserLoginId == userId).SingleOrDefault();
+                user.IsDeleted = true;
+
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
         [HttpPost]
         public bool AddAuthor(Author author)
         {
@@ -479,10 +628,34 @@ namespace API.Controllers
                          b.Publisher,
                          b.Authors,
                          b.ImagePath,
-                         b.Copies
+                         b.Copies,
+                         b.Edition
                      }).Where(x => x.BookId.Equals(bookId)).SingleOrDefault();
 
             return q;
+        }
+
+
+        [HttpGet]
+        public bool UserNameAvailability(string username)
+        {
+            UserLogin user = db.UserLogins.Where(x => x.UserName.Equals(username)).SingleOrDefault();
+
+            if (user == null)
+                return true;
+            else
+                return false;
+        }
+
+        [HttpGet]
+        public bool BookNameAvailability(string bookTitle)
+        {
+            Book book = db.Books.Where(x => x.Title.Equals(bookTitle)).SingleOrDefault();
+
+            if (book == null)
+                return true;
+            else
+                return false;
         }
 
         // POST api/values
