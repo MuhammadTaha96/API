@@ -234,7 +234,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public bool ReserveACopy(int bookId, int userLoginId)
+        public Reservation ReserveACopy(int bookId, int userLoginId)
         {
             try
             {
@@ -245,19 +245,18 @@ namespace API.Controllers
                 res.ReservedCopy.Status = db.Status.Where(x => x.Name == "Reserved").SingleOrDefault();
                 res.Status = db.ReservationStatus.Where(x => x.Name.Equals("Active")).SingleOrDefault();
                 res.StartDateTime = DateTime.Now;
-                res.EndDateTime = DateTime.Today.AddDays(1);
+                res.EndDateTime = DateTime.Today.AddDays(1);    
                 //  Notification.SMS("ReserverACopy", res.ReservedBy, book, res);
 
                 db.Reservations.Add(res);
                 db.SaveChanges();
-
-
+                return res;
             }
             catch (Exception ex)
             {
-                return false;
+                return null;
             }
-            return true;
+          
         }
 
 
