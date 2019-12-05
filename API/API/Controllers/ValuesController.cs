@@ -3,6 +3,7 @@ using Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -93,7 +94,6 @@ namespace API.Controllers
                          r.ReservedBy,
                          r.StartDateTime,
                          r.EndDateTime,
-                         r.IsCancled,
                          r.ReservedCopy.Book
                      }).OrderBy(x => x.ReservationId).ToList();
 
@@ -243,10 +243,10 @@ namespace API.Controllers
                 res.ReservedBy = db.UserLogins.Where(x => x.UserLoginId == userLoginId).SingleOrDefault();
                 res.ReservedCopy = db.Copies.Where(x => x.Book.BookId == bookId && x.Status.Name == "Available").FirstOrDefault();
                 res.ReservedCopy.Status = db.Status.Where(x => x.Name == "Reserved").SingleOrDefault();
-
+                res.Status = db.ReservationStatus.Where(x => x.Name.Equals("Active")).SingleOrDefault();
                 res.StartDateTime = DateTime.Now;
                 res.EndDateTime = DateTime.Today.AddDays(1);
-                Notification.SMS("ReserverACopy", res.ReservedBy, book, res);
+                //  Notification.SMS("ReserverACopy", res.ReservedBy, book, res);
 
                 db.Reservations.Add(res);
                 db.SaveChanges();
@@ -473,13 +473,13 @@ namespace API.Controllers
             }
         }
 
-         [HttpGet]
+        [HttpGet]
         public bool CancleReservation(int reservationId, int copyId)
         {
             try
             {
                 Reservation reservation = db.Reservations.Where(x => x.ReservationId == reservationId).SingleOrDefault();
-                reservation.IsCancled = true;
+                reservation.Status = db.ReservationStatus.Where(x => x.Name.Equals("Cancelled")).SingleOrDefault();
                 Copy copy = db.Copies.Where(x => x.CopyId == copyId).SingleOrDefault();
                 copy.Status = db.Status.Where(x => x.Name.Equals("Available")).SingleOrDefault();
 
@@ -657,6 +657,158 @@ namespace API.Controllers
             else
                 return false;
         }
+
+        [HttpGet]
+        public object CheckInCheckOut(string UserRFID, string CopyRFID)
+        {
+            TransactionResponse response = null;
+            try
+            {
+                UserLogin user = db.UserLogins.Where(x => x.RFID.Equals(UserRFID)).SingleOrDefault();
+                Copy copy = db.Copies.Where(x => x.RFID.Equals(CopyRFID)).SingleOrDefault();
+
+                if (user == null)
+                {
+                    response = new TransactionResponse()
+                    {
+                        ReponseCode = 003,
+                        ResponseMessage = "User not found"
+                    };
+
+                    return response;
+                }
+                else if (copy == null)
+                {
+                    response = new TransactionResponse()
+                    {
+                        ReponseCode = 003,
+                        ResponseMessage = "Book not found"
+                    };
+
+                    return response;
+                }
+
+                Reservation resActive = db.Reservations.Where(x => x.ReservedBy.UserLoginId.Equals(user.UserLoginId) && x.ReservedCopy.CopyId.Equals(copy.CopyId) && x.Status.Name.Equals("Active")).SingleOrDefault();
+                Reservation resCheckIn = db.Reservations.Where(x => x.ReservedBy.UserLoginId.Equals(user.UserLoginId) && x.ReservedCopy.CopyId.Equals(copy.CopyId) && x.Status.Name.Equals("CheckIn")).SingleOrDefault();
+                List<Reservation> resCheckOut = db.Reservations.Where(x => x.ReservedBy.UserLoginId.Equals(user.UserLoginId) && x.ReservedCopy.CopyId.Equals(copy.CopyId) && x.Status.Name.Equals("CheckOut")).ToList();
+                UserLoginFine UserFine = db.UserLoginFines.Where(x => x.Defaulter.UserLoginId.Equals(user.UserLoginId)).SingleOrDefault();
+
+                int FinePerDay = int.Parse(ConfigurationManager.AppSettings["FinePerDay"].ToString());
+                int overdueDays = 0;
+
+
+                if (resActive != null) //Check In Operation
+                {
+                    Transaction trans = new Transaction()
+                    {
+                        Reservation = resActive,
+                        User = db.UserLogins.Where(x => x.RFID.Equals(UserRFID)).SingleOrDefault(),
+                        Copy = db.Copies.Where(x => x.RFID.Equals(CopyRFID)).SingleOrDefault(),
+                        CheckInDate = DateTime.Now,
+                        Fine = 0,
+                        DaysKept = 0,
+                        ExpectedReturnDate = DateTime.Today.AddDays(3),
+                        Type = db.TransactionType.Where(x => x.Name.Equals("CheckIn")).SingleOrDefault()
+                    };
+
+                    resActive.Status = db.ReservationStatus.Where(x => x.Name.Equals("Checkin")).SingleOrDefault();
+                    copy.Status = db.Status.Where(x => x.Name.Equals("Issued")).SingleOrDefault();
+
+                    db.Transactions.Add(trans);
+                    db.SaveChanges();
+
+                    response = new TransactionResponse()
+                    {
+                        ReponseCode = 200,
+                        ResponseMessage = "Book Successfully Checked In. Please make sure to return the book on " + trans.ExpectedReturnDate.Date
+                    };
+                }
+
+                else if (resCheckIn != null) //Check Out Operation
+                {
+                    string Message = string.Empty;
+                    Transaction TranCheckIn = db.Transactions.Where(x => x.User.RFID.Equals(UserRFID) && x.Copy.RFID.Equals(CopyRFID) && x.Reservation.ReservationId.Equals(resCheckIn.ReservationId)).SingleOrDefault();
+                    TranCheckIn.CheckOutDate = DateTime.Now;
+                    TranCheckIn.Type = db.TransactionType.Where(x => x.Name.Equals("CheckOut")).SingleOrDefault();
+                    TranCheckIn.DaysKept = DateTime.Now.Day - TranCheckIn.CheckInDate.Day; //TranCheckIn.ExpectedReturnDate.Day;
+                    overdueDays = (DateTime.Now.Day - TranCheckIn.ExpectedReturnDate.Day) > 0 ? (DateTime.Now.Day - TranCheckIn.ExpectedReturnDate.Day) : 0;
+                    TranCheckIn.Fine = overdueDays * FinePerDay;
+
+                    resCheckIn.Status = db.ReservationStatus.Where(x => x.Name.Equals("Checkout")).SingleOrDefault();
+                    copy.Status = db.Status.Where(x => x.Name.Equals("Available")).SingleOrDefault();
+
+                    db.SaveChanges();
+
+                    if (TranCheckIn.Fine > 0)
+                    {
+                        Message = string.Format("You Kept this book for {0} day(s) which is {1} day(s) more than expected. Please say a fine of Ruppees {2} to the Librarian.", TranCheckIn.DaysKept, overdueDays, TranCheckIn.Fine);
+
+                        if (UserFine != null)
+                        {
+                            UserFine.Amount += TranCheckIn.Fine;
+                        }
+                        else
+                        {
+                            UserLoginFine firstFine = new UserLoginFine()
+                            {
+                                Amount = TranCheckIn.Fine,
+                                Defaulter = user
+                            };
+
+                            db.UserLoginFines.Add(firstFine);
+                        }
+                    }
+                    else
+                    {
+                        Message = "Book Successfully Checked Out";
+                    }
+
+                    response = new TransactionResponse()
+                   {
+                       ReponseCode = 200,
+                       ResponseMessage = Message,
+                       Fine = TranCheckIn.Fine
+                   };
+
+                }
+                else if (resCheckOut.Count > 0) //User is trying to check out the issued a book again
+                {
+                    response = new TransactionResponse()
+                    {
+                        ReponseCode = 200,
+                        ResponseMessage = "You have already checked out this book. Please return it to shelve if not yet returned"
+                    };
+                }
+                else //User has not reserved a book.
+                {
+                    response = new TransactionResponse()
+                    {
+                        ReponseCode = 200,
+                        ResponseMessage = "Please reserve this book first then try to check in"
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                response = new TransactionResponse()
+               {
+                   ReponseCode = 002,
+                   ResponseMessage = "Something went wrong"
+               };
+            }
+
+            return response;
+        }
+
+        //[HttpGet]
+        //public object AuthenticateStudentRFID(string rfid)
+        //{
+        // //   UserLogin user = db.UserLogins.Where(x => x.RFID.Equals(rfid)).SingleOrDefault();
+        ////    List<Reservation> reservationList = db.Reservations.Where(x => x.ReservedBy.UserLoginId.Equals(user.UserLoginId) && x.is .Equals(false) && x.ReservedCopy != null).ToList();
+        //    //List<Copy> copies = db.Copies.Where(x=>x.CopyId.Equals(reser))
+
+        ////    return user;
+        //}
 
         // POST api/values
         public void Post([FromBody]string value)

@@ -15,9 +15,9 @@ namespace Models
         public int ReservationId { get; set; }
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
-        public bool IsCancled { get; set; }
-
+        
         public Copy ReservedCopy { get; set; }
         public UserLogin ReservedBy { get; set; }
+        public ReservationStatus Status { get; set; }
     }
 }

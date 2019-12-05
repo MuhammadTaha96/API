@@ -222,6 +222,14 @@
     <Compile Include="Migrations\201911241411033_EDITION.Designer.cs">
       <DependentUpon>201911241411033_EDITION.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201912032118477_newtables.cs" />
+    <Compile Include="Migrations\201912032118477_newtables.Designer.cs">
+      <DependentUpon>201912032118477_newtables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912050900194_UserLoginFine.cs" />
+    <Compile Include="Migrations\201912050900194_UserLoginFine.Designer.cs">
+      <DependentUpon>201912050900194_UserLoginFine.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Operations\Account.cs" />
     <Compile Include="Operations\Constants.cs" />
@@ -355,6 +363,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201911241411033_EDITION.resx">
       <DependentUpon>201911241411033_EDITION.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912032118477_newtables.resx">
+      <DependentUpon>201912032118477_newtables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912050900194_UserLoginFine.resx">
+      <DependentUpon>201912050900194_UserLoginFine.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

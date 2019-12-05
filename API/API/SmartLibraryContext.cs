@@ -30,8 +30,9 @@ namespace API
         public DbSet<UserLogin> UserLogins { get; set; }
         public DbSet<UserType> UserTypes { get; set; }
         public DbSet<Ebook> Ebook { get; set; }
-
-
-
+        public DbSet<ReservationStatus> ReservationStatus { get; set; }
+        public DbSet<TransactionType> TransactionType { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<UserLoginFine> UserLoginFines { get; set; } 
     }
 }
