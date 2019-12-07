@@ -33,6 +33,8 @@ namespace API
         public DbSet<ReservationStatus> ReservationStatus { get; set; }
         public DbSet<TransactionType> TransactionType { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
-        public DbSet<UserLoginFine> UserLoginFines { get; set; } 
+        public DbSet<UserLoginFine> UserLoginFines { get; set; }
+        public DbSet<ElectronicFileType> ElectronicFileTypes { get; set; }
+        public DbSet<ElectronicFile> ElectronicFiles { get; set; } 
     }
 }

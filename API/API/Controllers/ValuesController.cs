@@ -245,7 +245,7 @@ namespace API.Controllers
                 res.ReservedCopy.Status = db.Status.Where(x => x.Name == "Reserved").SingleOrDefault();
                 res.Status = db.ReservationStatus.Where(x => x.Name.Equals("Active")).SingleOrDefault();
                 res.StartDateTime = DateTime.Now;
-                res.EndDateTime = DateTime.Today.AddDays(1);    
+                res.EndDateTime = DateTime.Today.AddDays(1);
                 //  Notification.SMS("ReserverACopy", res.ReservedBy, book, res);
 
                 db.Reservations.Add(res);
@@ -256,7 +256,7 @@ namespace API.Controllers
             {
                 return null;
             }
-          
+
         }
 
 
@@ -798,6 +798,14 @@ namespace API.Controllers
 
             return response;
         }
+
+        [HttpGet]
+        public object GetEletronicFiles(int fileType)
+        {
+            List<ElectronicFile> efiles = db.ElectronicFiles.Where(x => x.FileType.ElectronicFileTypeId.Equals(fileType)).ToList();
+            return efiles;
+        }
+
 
         //[HttpGet]
         //public object AuthenticateStudentRFID(string rfid)

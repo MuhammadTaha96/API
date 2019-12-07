@@ -60,6 +60,8 @@
     <Compile Include="Models\Author.cs" />
     <Compile Include="Models\Book.cs" />
     <Compile Include="Models\Ebook.cs" />
+    <Compile Include="Models\ElectronicFileType.cs" />
+    <Compile Include="Models\ElectronicFile.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Comment.cs" />

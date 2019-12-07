@@ -230,6 +230,22 @@
     <Compile Include="Migrations\201912050900194_UserLoginFine.Designer.cs">
       <DependentUpon>201912050900194_UserLoginFine.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201912062358145_electronicfiles.cs" />
+    <Compile Include="Migrations\201912062358145_electronicfiles.Designer.cs">
+      <DependentUpon>201912062358145_electronicfiles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912070000444_eletronicfiles.cs" />
+    <Compile Include="Migrations\201912070000444_eletronicfiles.Designer.cs">
+      <DependentUpon>201912070000444_eletronicfiles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912070004294_path.cs" />
+    <Compile Include="Migrations\201912070004294_path.Designer.cs">
+      <DependentUpon>201912070004294_path.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912070005230_tablenamechange.cs" />
+    <Compile Include="Migrations\201912070005230_tablenamechange.Designer.cs">
+      <DependentUpon>201912070005230_tablenamechange.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Operations\Account.cs" />
     <Compile Include="Operations\Constants.cs" />
@@ -369,6 +385,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201912050900194_UserLoginFine.resx">
       <DependentUpon>201912050900194_UserLoginFine.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912062358145_electronicfiles.resx">
+      <DependentUpon>201912062358145_electronicfiles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912070000444_eletronicfiles.resx">
+      <DependentUpon>201912070000444_eletronicfiles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912070004294_path.resx">
+      <DependentUpon>201912070004294_path.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912070005230_tablenamechange.resx">
+      <DependentUpon>201912070005230_tablenamechange.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
