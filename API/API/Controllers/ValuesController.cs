@@ -94,7 +94,28 @@ namespace API.Controllers
                          r.ReservedBy,
                          r.StartDateTime,
                          r.EndDateTime,
-                         r.ReservedCopy.Book
+                         r.ReservedCopy.Book,
+                         r.Status
+                         
+                     }).OrderBy(x => x.ReservationId).ToList();
+
+            return q;
+        }
+
+        public object GetActiveReservationsByUser(int userLoginId)
+        {
+            var q = (from r in db.Reservations
+                     where r.ReservedBy.UserLoginId.Equals(userLoginId) && r.Status.Name.Equals("Active")
+                     select new
+                     {
+                         r.ReservationId,
+                         r.ReservedCopy,
+                         r.ReservedBy,
+                         r.StartDateTime,
+                         r.EndDateTime,
+                         r.ReservedCopy.Book,
+                         r.Status
+
                      }).OrderBy(x => x.ReservationId).ToList();
 
             return q;
@@ -246,7 +267,7 @@ namespace API.Controllers
                 res.Status = db.ReservationStatus.Where(x => x.Name.Equals("Active")).SingleOrDefault();
                 res.StartDateTime = DateTime.Now;
                 res.EndDateTime = DateTime.Today.AddDays(1);
-                //  Notification.SMS("ReserverACopy", res.ReservedBy, book, res);
+                 Notification.SendTeleSignSMS("ReserverACopy", res.ReservedBy, book, res);
 
                 db.Reservations.Add(res);
                 db.SaveChanges();
@@ -491,6 +512,25 @@ namespace API.Controllers
             }
         }
 
+
+
+        public object GetTransactions()
+        {
+            var q = (from t in db.Transactions
+                     select new
+                     {
+                         t.TransactionId,
+                         t.ExpectedReturnDate,
+                         t.Copy,
+                         t.Copy.Book,
+                         t.Reservation,
+                         t.User,
+                         t.Type
+                         
+                     }).OrderBy(x => x.TransactionId).ToList();
+
+            return q;
+        }
         [HttpGet]
         public bool DeleteUser(int userId)
         {
@@ -736,8 +776,7 @@ namespace API.Controllers
                     resCheckIn.Status = db.ReservationStatus.Where(x => x.Name.Equals("Checkout")).SingleOrDefault();
                     copy.Status = db.Status.Where(x => x.Name.Equals("Available")).SingleOrDefault();
 
-                    db.SaveChanges();
-
+                   
                     if (TranCheckIn.Fine > 0)
                     {
                         Message = string.Format("You Kept this book for {0} day(s) which is {1} day(s) more than expected. Please say a fine of Ruppees {2} to the Librarian.", TranCheckIn.DaysKept, overdueDays, TranCheckIn.Fine);
@@ -768,6 +807,8 @@ namespace API.Controllers
                        ResponseMessage = Message,
                        Fine = TranCheckIn.Fine
                    };
+
+                    db.SaveChanges();
 
                 }
                 else if (resCheckOut.Count > 0) //User is trying to check out the issued a book again
