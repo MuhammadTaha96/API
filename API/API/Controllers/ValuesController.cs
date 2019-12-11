@@ -102,6 +102,27 @@ namespace API.Controllers
             return q;
         }
 
+        public object GetTransactions()
+        {
+            var q = (from t in db.Transactions
+                     select new
+                     {
+                         t.TransactionId,
+                         t.CheckInDate,
+                         t.CheckOutDate,
+                         t.ExpectedReturnDate,
+                         t.Fine,
+                         t.DaysKept,
+                         t.Copy,
+                         t.Copy.Book,
+                         t.User,
+                         t.Reservation,
+                         t.Type
+                     }).OrderBy(x => x.TransactionId).ToList();
+
+            return q;
+        }
+
         public object GetActiveReservationsByUser(int userLoginId)
         {
             var q = (from r in db.Reservations
@@ -133,6 +154,35 @@ namespace API.Controllers
 
             return q;
         }
+
+        public object GetElectronicTypes()
+        {
+            var q = (from u in db.ElectronicFileTypes
+                     select new
+                     {
+                         u.ElectronicFileTypeId,
+                         u.Name,
+                     }).OrderBy(x => x.Name).ToList();
+
+            return q;
+        }
+
+        public object GetElectronicFiles()
+        {
+            var q = (from u in db.ElectronicFiles
+                     select new
+                     {
+                        u.ElectronicFileId,
+                        u.FileName,
+                        u.FileType,
+                        u.Path
+                     }).OrderBy(x => x.FileName).ToList();
+
+            return q;
+        }
+
+
+        
 
         public object GetCopies()
         {
@@ -414,6 +464,24 @@ namespace API.Controllers
             return true;
         }
 
+        [HttpPost]  
+        public bool AddElectronicFile(ElectronicFile efile)
+        {
+            try
+            {
+
+                efile.FileType = db.ElectronicFileTypes.Where(x => x.ElectronicFileTypeId.Equals(efile.ElectronicFileId)).SingleOrDefault();
+
+                db.ElectronicFiles.Add(efile);
+                db.SaveChanges();
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+
         [HttpPost]
         public bool AddUser(UserLogin user)
         {
@@ -512,25 +580,6 @@ namespace API.Controllers
             }
         }
 
-
-
-        public object GetTransactions()
-        {
-            var q = (from t in db.Transactions
-                     select new
-                     {
-                         t.TransactionId,
-                         t.ExpectedReturnDate,
-                         t.Copy,
-                         t.Copy.Book,
-                         t.Reservation,
-                         t.User,
-                         t.Type
-                         
-                     }).OrderBy(x => x.TransactionId).ToList();
-
-            return q;
-        }
         [HttpGet]
         public bool DeleteUser(int userId)
         {
@@ -692,6 +741,17 @@ namespace API.Controllers
             Book book = db.Books.Where(x => x.Title.Equals(bookTitle)).SingleOrDefault();
 
             if (book == null)
+                return true;
+            else
+                return false;
+        }
+
+        [HttpGet]
+        public bool EFileNameAvailability(string eFileName)
+        {
+            ElectronicFile efile = db.ElectronicFiles.Where(x => x.FileName.Equals(eFileName)).SingleOrDefault();
+
+            if (efile == null)
                 return true;
             else
                 return false;
