@@ -250,6 +250,10 @@
     <Compile Include="Migrations\201912070005230_tablenamechange.Designer.cs">
       <DependentUpon>201912070005230_tablenamechange.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201912150000012_description.cs" />
+    <Compile Include="Migrations\201912150000012_description.Designer.cs">
+      <DependentUpon>201912150000012_description.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Operations\Account.cs" />
     <Compile Include="Operations\Constants.cs" />
@@ -401,6 +405,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201912070005230_tablenamechange.resx">
       <DependentUpon>201912070005230_tablenamechange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912150000012_description.resx">
+      <DependentUpon>201912150000012_description.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

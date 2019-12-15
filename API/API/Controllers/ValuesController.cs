@@ -84,9 +84,11 @@ namespace API.Controllers
             }
         }
 
+        //Get all active reservations 
         public object GetReservations()
         {
             var q = (from r in db.Reservations
+                     where r.Status.Name.Equals("Active")
                      select new
                      {
                          r.ReservationId,
@@ -96,7 +98,7 @@ namespace API.Controllers
                          r.EndDateTime,
                          r.ReservedCopy.Book,
                          r.Status
-                         
+
                      }).OrderBy(x => x.ReservationId).ToList();
 
             return q;
@@ -172,17 +174,17 @@ namespace API.Controllers
             var q = (from u in db.ElectronicFiles
                      select new
                      {
-                        u.ElectronicFileId,
-                        u.FileName,
-                        u.FileType,
-                        u.Path
+                         u.ElectronicFileId,
+                         u.FileName,
+                         u.FileType,
+                         u.Path
                      }).OrderBy(x => x.FileName).ToList();
 
             return q;
         }
 
 
-        
+
 
         public object GetCopies()
         {
@@ -317,7 +319,7 @@ namespace API.Controllers
                 res.Status = db.ReservationStatus.Where(x => x.Name.Equals("Active")).SingleOrDefault();
                 res.StartDateTime = DateTime.Now;
                 res.EndDateTime = DateTime.Today.AddDays(1);
-                 Notification.SendTeleSignSMS("ReserverACopy", res.ReservedBy, book, res);
+                Notification.SendTeleSignSMS("ReserverACopy", res.ReservedBy, book, res);
 
                 db.Reservations.Add(res);
                 db.SaveChanges();
@@ -464,13 +466,13 @@ namespace API.Controllers
             return true;
         }
 
-        [HttpPost]  
+        [HttpPost]
         public bool AddElectronicFile(ElectronicFile efile)
         {
             try
             {
 
-                efile.FileType = db.ElectronicFileTypes.Where(x => x.ElectronicFileTypeId.Equals(efile.ElectronicFileId)).SingleOrDefault();
+                efile.FileType = db.ElectronicFileTypes.Where(x => x.ElectronicFileTypeId.Equals(efile.FileType.ElectronicFileTypeId)).SingleOrDefault();
 
                 db.ElectronicFiles.Add(efile);
                 db.SaveChanges();
@@ -836,7 +838,7 @@ namespace API.Controllers
                     resCheckIn.Status = db.ReservationStatus.Where(x => x.Name.Equals("Checkout")).SingleOrDefault();
                     copy.Status = db.Status.Where(x => x.Name.Equals("Available")).SingleOrDefault();
 
-                   
+
                     if (TranCheckIn.Fine > 0)
                     {
                         Message = string.Format("You Kept this book for {0} day(s) which is {1} day(s) more than expected. Please say a fine of Ruppees {2} to the Librarian.", TranCheckIn.DaysKept, overdueDays, TranCheckIn.Fine);
@@ -903,7 +905,21 @@ namespace API.Controllers
         [HttpGet]
         public object GetEletronicFiles(int fileType)
         {
-            List<ElectronicFile> efiles = db.ElectronicFiles.Where(x => x.FileType.ElectronicFileTypeId.Equals(fileType)).ToList();
+
+            var efiles = (
+                from f in db.ElectronicFiles
+                where f.FileType.ElectronicFileTypeId.Equals(fileType)
+                select new
+                {
+                    f.ElectronicFileId,
+                    f.FileName,
+                    f.Description,
+                    f.Path,
+                    f.FileType
+                }
+                              ).ToList();
+            
+            //List<ElectronicFile> efiles = db.ElectronicFiles.Where(x => x.FileType.ElectronicFileTypeId.Equals(fileType)).ToList();
             return efiles;
         }
 
