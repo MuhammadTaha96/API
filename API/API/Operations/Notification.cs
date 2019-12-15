@@ -61,11 +61,9 @@ namespace API.Operations
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+               
             }
 
-            Console.WriteLine("Press any key to quit.");
-            Console.ReadKey();
         }
 
         private static string TemplateParser(string templateContent, UserLogin user, Book book, Reservation reserve)
